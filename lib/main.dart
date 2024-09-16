@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:expressions/expressions.dart';
 
 void main() {
-  runApp(CalculatorApp());
+  runApp(const CalculatorApp());
 }
 
 class CalculatorApp extends StatelessWidget {
+  const CalculatorApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,12 +15,14 @@ class CalculatorApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CalculatorScreen(),
+      home: const CalculatorScreen(),
     );
   }
 }
 
 class CalculatorScreen extends StatefulWidget {
+  const CalculatorScreen({super.key});
+
   @override
   _CalculatorScreenState createState() => _CalculatorScreenState();
 }
@@ -35,13 +39,29 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       } else if (text == '=') {
         try {
             final expression = Expression.parse(_expression);
-            final evaluator = const ExpressionEvaluator();
+            const evaluator = ExpressionEvaluator();
             final result = evaluator.eval(expression, {});
             _result = result.toString();
         } catch (e) {
           _result = 'Error';
         }
-      } else {
+      } else if (text == 'x^2') {
+        try {
+          final expression = Expression.parse(_expression);
+          const evaluator = ExpressionEvaluator();
+          final result = evaluator.eval(expression, {});
+          _expression = '$result*$result';
+          final squaredExpression = Expression.parse(_expression);
+          final squaredResult = evaluator.eval(squaredExpression, {});
+          _result = squaredResult.toString();
+        } catch (e) {
+          _result = 'Error';
+        }
+      }else {
+        if (_result.isNotEmpty) {
+          _expression = '';
+          _result = '';
+        }
         _expression += text;
       }
     });
@@ -75,8 +95,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ),
             ),
           ),
-          Divider(height: 1),
-          _buildButtonRow(['7', '8', '9', '/']),
+          const Divider(height: 1),
+          _buildButtonRow(['7', '8', '9', '/', 'x^2']),
           _buildButtonRow(['4', '5', '6', '*']),
           _buildButtonRow(['1', '2', '3', '-']),
           _buildButtonRow(['C', '0', '=', '+']),
@@ -92,13 +112,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         children: buttons.map((button) {
           return Expanded(
             child: FilledButton(
-              onPressed: () => _onPressed(button),
-              child: Text(
-                button,
-                style: TextStyle(fontSize: 24),
-              ), style: FilledButton.styleFrom(
+              onPressed: () => _onPressed(button), style: FilledButton.styleFrom(
                 backgroundColor: Colors.grey[700],
                 side: BorderSide(color: Colors.grey[300]!),
+              ),
+              child: Text(
+                button,
+                style: const TextStyle(fontSize: 24),
               )
             ),
           );
